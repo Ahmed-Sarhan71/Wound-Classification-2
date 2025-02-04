@@ -154,8 +154,7 @@ def main():
                 "Surgical Procedure": [surgical]
             })
             st.write("### Final Report")
-            # Use st.dataframe with container width so columns are big enough
-            st.dataframe(report_df, use_container_width=True)
+      
             
       
              # Optional: apply styling with Pandas Styler if you need more control
