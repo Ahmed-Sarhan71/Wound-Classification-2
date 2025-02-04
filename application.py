@@ -138,7 +138,7 @@ def main():
             "Antibiotic": [antibiotic],
             "Surgical Procedure": [surgical]
         })
-        st.table(treatment_df)
+        st.dataframe(report_df, use_container_width=True)
         
         # Generate final report on button click
         if st.button("Generate Final Report"):
