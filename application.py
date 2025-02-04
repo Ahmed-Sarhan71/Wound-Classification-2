@@ -177,6 +177,8 @@ def main():
         st.table(treatment_df)
         
  
+      # Generate final report on button click, displaying three tables and providing PDF download
+        if st.button("Generate Final Report"):
     
             
             # Generate combined PDF report
