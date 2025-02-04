@@ -128,9 +128,18 @@ def main():
         # Convert predictions into human-readable results (threshold 0.5)
         infection_result = "Positive" if infection_pred[0][0] > 0.5 else "Negative"
         ischaemia_result = "Positive" if ischaemia_pred[0][0] > 0.5 else "Negative"
+               # Patient Information Table
+        st.write("### Patient Information")
+        patient_df = pd.DataFrame({
+            "Name": [name],
+            "ID": [user_id],
+            "Address": [address],
+            "Phone": [phone]
+        })
+        st.dataframe(patient_df, use_container_width=True)
         
         # Display classification results in Table 1
-        st.write("### Classification Results (Table 1)")
+        st.write("### Results ")
         report_df = pd.DataFrame({
             "Infection": [infection_result],
             "Ischaemia": [ischaemia_result]
@@ -138,7 +147,7 @@ def main():
         st.table(report_df)
         
         # Automated Treatment Recommendations (Suggestive Treatment - Table 2)
-        st.write("### Automated Treatment Recommendations (Suggestive Treatment)")
+        st.write("### Suggestive Treatment")
         if infection_result == "Positive" and ischaemia_result == "Positive":
             dressing = "Foam, Alginate, Hydrofiber, Polymeric membrane"
             antibiotic = "May or may not be required (based on underlying cause)"
@@ -167,15 +176,7 @@ def main():
         })
         st.table(treatment_df)
         
-        # Patient Information Table
-        st.write("### Patient Information")
-        patient_df = pd.DataFrame({
-            "Name": [name],
-            "ID": [user_id],
-            "Address": [address],
-            "Phone": [phone]
-        })
-        st.dataframe(patient_df, use_container_width=True)
+ 
         
         # Generate final report on button click, displaying three tables and providing PDF download
         if st.button("Generate Final Report"):
