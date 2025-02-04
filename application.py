@@ -13,8 +13,8 @@ tf.random.set_seed(42)
 # Function to load the pretrained models
 def load_models():
     # Replace "my_model.h5" with the appropriate model paths for your infection and ischaemia models
-    infection_model = tf.keras.models.load_model("infection_model.h5")
-    ischaemia_model = tf.keras.models.load_model("ischaemia_model.h5")
+    infection_model = tf.keras.models.load_model("my_model.h5")
+    ischaemia_model = tf.keras.models.load_model("my_model.h5")
     return infection_model, ischaemia_model
 
 # Function to preprocess the uploaded image
