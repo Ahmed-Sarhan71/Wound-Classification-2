@@ -181,12 +181,12 @@ def main():
         st.write("### Suggestive Treatment")
         st.dataframe(treatment_df, use_container_width=True)
         styled_treatment = treatment_df.style.set_table_styles(
-    [{
-        'selector': 'th',
-        'props': [('min-width', '50px'), ('width', '50px')]
-    }]
-)
-st.write(styled_treatment)
+            [{
+                'selector': 'th',
+                 'props': [('min-width', '50px'), ('width', '50px')]
+            }]
+        )
+        st.write(styled_treatment)
         
         # Generate PDF report and provide a download button
         # File name: patientID_currentDate.pdf (e.g., 11191029023_20250204.pdf)
