@@ -4,6 +4,11 @@ import numpy as np
 import pandas as pd
 from tensorflow.keras.preprocessing import image
 import random
+import io
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
 # Set seeds for reproducibility
 random.seed(42)
@@ -23,6 +28,35 @@ def preprocess_img(uploaded_file, target_size=(224, 224)):
     img_array = image.img_to_array(img)
     img_array = img_array / 255.0  # Normalize pixel values to [0, 1]
     return np.expand_dims(img_array, axis=0)
+
+# Function to generate a PDF report from a DataFrame using ReportLab
+def generate_pdf(report_df):
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+    
+    styles = getSampleStyleSheet()
+    title = Paragraph("Final Report", styles['Title'])
+    elements.append(title)
+    elements.append(Spacer(1, 12))
+    
+    # Convert DataFrame to a list of lists: header row followed by data rows.
+    data = [report_df.columns.tolist()] + report_df.values.tolist()
+    table = Table(data, hAlign="LEFT")
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.grey),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0,0), (-1,0), 12),
+        ('BACKGROUND', (0,1), (-1,-1), colors.beige),
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+    ]))
+    elements.append(table)
+    doc.build(elements)
+    pdf = buffer.getvalue()
+    buffer.close()
+    return pdf
 
 def main():
     st.title("Wound Classification with AI")
@@ -121,6 +155,15 @@ def main():
             })
             st.write("### Final Report")
             st.table(report_df)
+            
+            # Generate PDF report and provide download button
+            pdf_bytes = generate_pdf(report_df)
+            st.download_button(
+                label="Download Final Report as PDF",
+                data=pdf_bytes,
+                file_name="final_report.pdf",
+                mime="application/pdf"
+            )
 
 if __name__ == "__main__":
     main()
