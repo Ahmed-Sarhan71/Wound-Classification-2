@@ -12,15 +12,16 @@ tf.random.set_seed(42)
 
 # Function to load the pretrained models
 def load_models():
-    infection_model = tf.keras.models.load_model("my_model.h5")
-    ischaemia_model = tf.keras.models.load_model("my_model.h5")
+    # Replace "my_model.h5" with the appropriate model paths for your infection and ischaemia models
+    infection_model = tf.keras.models.load_model("infection_model.h5")
+    ischaemia_model = tf.keras.models.load_model("ischaemia_model.h5")
     return infection_model, ischaemia_model
 
 # Function to preprocess the uploaded image
 def preprocess_img(uploaded_file, target_size=(224, 224)):
     img = image.load_img(uploaded_file, target_size=target_size)
     img_array = image.img_to_array(img)
-    img_array = img_array / 255.0  # Normalize the image pixels to [0, 1]
+    img_array = img_array / 255.0  # Normalize pixel values to [0, 1]
     return np.expand_dims(img_array, axis=0)
 
 def main():
@@ -60,8 +61,8 @@ def main():
         ischaemia_pred = ischaemia_model.predict(img)
         
         # Convert predictions into human-readable results (threshold 0.5)
-        infection_result = "Positive" if infection_pred[0][0] < 0.5 else "Negative"
-        ischaemia_result = "Positive" if ischaemia_pred[0][0] < 0.5 else "Negative"
+        infection_result = "Positive" if infection_pred[0][0] > 0.5 else "Negative"
+        ischaemia_result = "Positive" if ischaemia_pred[0][0] > 0.5 else "Negative"
         
         # Display classification results in Table 1
         st.write("### Classification Results (Table 1)")
@@ -71,11 +72,39 @@ def main():
         })
         st.table(results_df)
         
-        # Treatment recommendation inputs (Table 2)
-        st.write("### Treatment Recommendations (Table 2)")
-        dressing = st.text_input("Dressing Material", "")
-        antibiotic = st.text_input("Antibiotic", "")
-        surgical = st.text_input("Surgical Procedure", "")
+        # Automated Treatment Recommendations (Table 2)
+        st.write("### Automated Treatment Recommendations (Table 2)")
+        
+        # Determine treatment recommendations based on classification results
+        if infection_result == "Positive" and ischaemia_result == "Positive":
+            dressing = "Foam, Alginate, Hydrofiber, Polymeric membrane"
+            antibiotic = "May or may not be required (based on underlying cause)"
+            surgical = "Find underlying cause; treat if necessary"
+        elif infection_result == "Positive" and ischaemia_result == "Negative":
+            dressing = "Standard dressing (no specific recommendation provided)"
+            antibiotic = "Not specified"
+            surgical = "Not specified"
+        elif infection_result == "Negative" and ischaemia_result == "Positive":
+            dressing = "Tulle, Hydrogel, Hydrocolloid, Silver dressing"
+            antibiotic = "Yes"
+            surgical = "Debridement may be needed"
+        elif infection_result == "Negative" and ischaemia_result == "Negative":
+            dressing = "All dressing materials except silver, charcoal, and advanced dressings"
+            antibiotic = "Yes"
+            surgical = ("Ready for secondary wound closure; if wound is small, continue "
+                        "dressing until the wound heals")
+        else:
+            dressing = "Not specified"
+            antibiotic = "Not specified"
+            surgical = "Not specified"
+        
+        # Create a DataFrame for treatment recommendations
+        treatment_df = pd.DataFrame({
+            "Dressing Material": [dressing],
+            "Antibiotic": [antibiotic],
+            "Surgical Procedure": [surgical]
+        })
+        st.table(treatment_df)
         
         # Generate final report on button click
         if st.button("Generate Final Report"):
