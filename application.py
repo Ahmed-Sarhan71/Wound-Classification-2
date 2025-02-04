@@ -143,23 +143,24 @@ def main():
             "Ischaemia": [ischaemia_result]
         })
         
-        # Determine automated treatment recommendations based on classification results
+        # Determine automated treatment recommendations based on classification results,
+        # inserting newline characters ("\n") to force text into four lines.
         if infection_result == "Positive" and ischaemia_result == "Positive":
-            dressing = "Foam, Alginate, Hydrofiber, Polymeric membrane"
-            antibiotic = "May or may not be required (based on underlying cause)"
-            surgical = "Find underlying cause; treat if necessary"
+            dressing = "Foam\nAlginate\nHydrofiber\nPolymeric membrane"
+            antibiotic = "May or may not be required\n(based on underlying cause)"
+            surgical = "Find underlying cause;\ntreat if necessary"
         elif infection_result == "Positive" and ischaemia_result == "Negative":
-            dressing = "Standard dressing (no specific recommendation provided)"
+            dressing = "Standard dressing\n(no specific recommendation provided)"
             antibiotic = "Not specified"
             surgical = "Not specified"
         elif infection_result == "Negative" and ischaemia_result == "Positive":
-            dressing = "Tulle, Hydrogel, Hydrocolloid, Silver dressing"
+            dressing = "Tulle\nHydrogel\nHydrocolloid\nSilver dressing"
             antibiotic = "Yes"
             surgical = "Debridement may be needed"
         elif infection_result == "Negative" and ischaemia_result == "Negative":
-            dressing = "All dressing materials except silver, charcoal, and advanced dressings"
+            dressing = "All dressing materials except\nsilver, charcoal, and advanced dressings"
             antibiotic = "Yes"
-            surgical = ("Ready for secondary wound closure; if wound is small, continue dressing until the wound heals")
+            surgical = ("Ready for secondary wound closure;\nif wound is small, continue dressing until the wound heals")
         else:
             dressing = "Not specified"
             antibiotic = "Not specified"
@@ -180,15 +181,8 @@ def main():
         
         st.write("### Suggestive Treatment")
         st.dataframe(treatment_df, use_container_width=True)
-        styled_treatment = treatment_df.style.set_table_styles(
-            [{
-                'selector': 'th',
-                 'props': [('min-width', '50px'), ('width', '50px')]
-            }]
-        )
-        st.write(styled_treatment)
         
-        # Generate PDF report and provide a download button
+        # Generate PDF report and provide a download button (one button only)
         # File name: patientID_currentDate.pdf (e.g., 11191029023_20250204.pdf)
         current_date = datetime.datetime.now().strftime("%Y%m%d")
         file_name = f"{user_id}_{current_date}.pdf"
