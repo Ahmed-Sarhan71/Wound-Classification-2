@@ -60,8 +60,8 @@ def main():
         ischaemia_pred = ischaemia_model.predict(img)
         
         # Convert predictions into human-readable results (threshold 0.5)
-        infection_result = "Positive" if infection_pred[0][0] > 0.5 else "Negative"
-        ischaemia_result = "Positive" if ischaemia_pred[0][0] > 0.5 else "Negative"
+        infection_result = "Positive" if infection_pred[0][0] < 0.5 else "Negative"
+        ischaemia_result = "Positive" if ischaemia_pred[0][0] < 0.5 else "Negative"
         
         # Display classification results in Table 1
         st.write("### Classification Results (Table 1)")
