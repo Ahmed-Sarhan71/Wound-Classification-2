@@ -5,6 +5,7 @@ import pandas as pd
 from tensorflow.keras.preprocessing import image
 import random
 import io
+import datetime
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -128,26 +129,21 @@ def main():
         # Convert predictions into human-readable results (threshold 0.5)
         infection_result = "Positive" if infection_pred[0][0] > 0.5 else "Negative"
         ischaemia_result = "Positive" if ischaemia_pred[0][0] > 0.5 else "Negative"
-               # Patient Information Table
-        st.write("### Patient Information")
+        
+        # Create DataFrames for each section
         patient_df = pd.DataFrame({
             "Name": [name],
             "ID": [user_id],
             "Address": [address],
             "Phone": [phone]
         })
-        st.dataframe(patient_df, use_container_width=True)
         
-        # Display classification results in Table 1
-        st.write("### Results ")
         report_df = pd.DataFrame({
             "Infection": [infection_result],
             "Ischaemia": [ischaemia_result]
         })
-        st.table(report_df)
         
-        # Automated Treatment Recommendations (Suggestive Treatment - Table 2)
-        st.write("### Suggestive Treatment")
+        # Determine automated treatment recommendations based on classification results
         if infection_result == "Positive" and ischaemia_result == "Positive":
             dressing = "Foam, Alginate, Hydrofiber, Polymeric membrane"
             antibiotic = "May or may not be required (based on underlying cause)"
@@ -174,21 +170,28 @@ def main():
             "Antibiotic": [antibiotic],
             "Surgical Procedure": [surgical]
         })
-        st.table(treatment_df)
         
- 
-      # Generate final report on button click, displaying three tables and providing PDF download
-        if st.button("Generate Final Report"):
-    
-            
-            # Generate combined PDF report
-            pdf_bytes = generate_pdf(patient_df, report_df, treatment_df)
-            st.download_button(
-                label="Download Final Report as PDF",
-                data=pdf_bytes,
-                file_name="final_report.pdf",
-                mime="application/pdf"
-            )
+        # Display the three tables separately
+        st.write("### Patient Information")
+        st.dataframe(patient_df, use_container_width=True)
+        
+        st.write("### Report")
+        st.dataframe(report_df, use_container_width=True)
+        
+        st.write("### Suggestive Treatment")
+        st.dataframe(treatment_df, use_container_width=True)
+        
+        # Generate PDF report and provide a download button
+        # File name: patientID_currentDate.pdf (e.g., 11191029023_20250204.pdf)
+        current_date = datetime.datetime.now().strftime("%Y%m%d")
+        file_name = f"{user_id}_{current_date}.pdf"
+        pdf_bytes = generate_pdf(patient_df, report_df, treatment_df)
+        st.download_button(
+            label="Download Final Report as PDF",
+            data=pdf_bytes,
+            file_name=file_name,
+            mime="application/pdf"
+        )
 
 if __name__ == "__main__":
     main()
