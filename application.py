@@ -158,6 +158,9 @@ def main():
             st.dataframe(report_df, use_container_width=True)
             
       
+             # Optional: apply styling with Pandas Styler if you need more control
+            styled_report = report_df.style.set_properties(**{'max-width': '50px', 'overflow': 'visible'})
+            st.dataframe(styled_report, use_container_width=True)
             
             # Generate PDF report and provide download button
             pdf_bytes = generate_pdf(report_df)
