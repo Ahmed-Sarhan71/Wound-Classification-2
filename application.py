@@ -177,18 +177,7 @@ def main():
         st.table(treatment_df)
         
  
-        
-        # Generate final report on button click, displaying three tables and providing PDF download
-        if st.button("Generate Final Report"):
-            st.write("### Final Report")
-            st.subheader("Patient Information")
-            st.dataframe(patient_df, use_container_width=True)
-            
-            st.subheader("Report")
-            st.dataframe(report_df, use_container_width=True)
-            
-            st.subheader("Suggestive Treatment")
-            st.dataframe(treatment_df, use_container_width=True)
+    
             
             # Generate combined PDF report
             pdf_bytes = generate_pdf(patient_df, report_df, treatment_df)
