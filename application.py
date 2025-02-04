@@ -38,7 +38,7 @@ def generate_pdf(patient_df, report_df, treatment_df):
     styles = getSampleStyleSheet()
 
     # Title
-    elements.append(Paragraph("Final Report", styles['Title']))
+    elements.append(Paragraph("Diagnosis Report", styles['Title']))
     elements.append(Spacer(1, 12))
     
     # Patient Information
@@ -143,8 +143,8 @@ def main():
             "Ischaemia": [ischaemia_result]
         })
         
-        # Determine automated treatment recommendations based on classification results,
-        # inserting newline characters ("\n") to force text into four lines.
+        # Determine automated treatment recommendations based on classification results
+        # Insert newline characters ("\n") so the text displays in multiple lines.
         if infection_result == "Positive" and ischaemia_result == "Positive":
             dressing = "Foam\nAlginate\nHydrofiber\nPolymeric membrane"
             antibiotic = "May or may not be required\n(based on underlying cause)"
@@ -172,7 +172,7 @@ def main():
             "Surgical Procedure": [surgical]
         })
         
-        # Display the three tables separately
+        # Display the three tables separately on the webpage
         st.write("### Patient Information")
         st.dataframe(patient_df, use_container_width=True)
         
@@ -180,9 +180,14 @@ def main():
         st.dataframe(report_df, use_container_width=True)
         
         st.write("### Suggestive Treatment")
-        st.dataframe(treatment_df, use_container_width=True)
+        # Convert newline characters to HTML line breaks for web display
+        treatment_df_html = treatment_df.copy()
+        for col in treatment_df_html.columns:
+            treatment_df_html[col] = treatment_df_html[col].str.replace("\n", "<br>")
+        html_table = treatment_df_html.to_html(escape=False, index=False)
+        st.markdown(html_table, unsafe_allow_html=True)
         
-        # Generate PDF report and provide a download button (one button only)
+        # Generate PDF report and provide a download button
         # File name: patientID_currentDate.pdf (e.g., 11191029023_20250204.pdf)
         current_date = datetime.datetime.now().strftime("%Y%m%d")
         file_name = f"{user_id}_{current_date}.pdf"
